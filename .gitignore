@@ -1,0 +1,94 @@
+# Visual Studio
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Build results
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+build/
+bld/
+[Bb]in/
+[Oo]bj/
+
+# NuGet
+*.nupkg
+# Include packages folder for .NET Core only
+# Uncomment if necessary: 
+# packages/
+# Include NuGet's global-packages folder if packages are installed in the solution directory
+# **/[Pp]ackages/*/
+
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
+ehthumbs.db
+[Dd]esktop.ini
+
+# Rider
+.idea/
+*.sln.iml
+
+# Resharper
+_ReSharper*/
+*.DotSettings.user
+
+# ASP.NET
+appsettings*.json
+bundleconfig.json
+
+# Logs
+*.log
+*.tlg
+*.log*
+
+# Files built by Visual Studio
+*_i.c
+*_p.c
+*_i.h
+*.ilk
+*.obj
+*.pdb
+*.idb
+*.idb
+*.pdb
+*.rsp
+
+# IDE files
+.idea
+*.sln.iml
+*.csproj.user
+
+# User-specific files
+*.rsuser
+*.user
+*.suo
+*.swp
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+
+# Lock files
+*.lock
+
+# node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Others
+*.ncache
+*.map
+*.out
+*.publishsettings
+*.vspscc
+*.vssscc
