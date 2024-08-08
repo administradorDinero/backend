@@ -15,7 +15,7 @@ namespace Servicios.validaciones
         public CuentaValidacion()
         {
             RuleFor(cuenta => cuenta.descripcion).NotNull().NotEmpty().MaximumLength(20).Must(ContentEmpty).WithMessage("No puede contener espacios en blanco");
-            RuleFor(cuenta => cuenta.valor).Must(MustBeCero).WithMessage("El valor deber ser igual a cero").Unless(cuenta =>cuenta.Id !=0); 
+           // RuleFor(cuenta => cuenta.valor).Must(MustBeCero).WithMessage("El valor deber ser igual a cero").Unless(cuenta =>cuenta.Id !=0); 
         }
         public bool MustBeCero(double valor)
         {

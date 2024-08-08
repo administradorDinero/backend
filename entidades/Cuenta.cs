@@ -11,11 +11,12 @@ namespace entidades
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)] public int Id { get; set; }
 
-        public double valor { get; set; }
+        public double? valor { get; set; }
 
         public string? descripcion { get; set; }
         [JsonIgnore]
         public Persona? persona { get; set; }
+        [JsonIgnore]
         public virtual ICollection<Transaccion>? Transaccions { get; set; }
 
     }
