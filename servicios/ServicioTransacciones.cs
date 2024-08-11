@@ -1,5 +1,6 @@
 ﻿
 using Entidades;
+using Microsoft.EntityFrameworkCore;
 using Repositorio;
 using System;
 using System.Collections.Generic;
@@ -21,13 +22,12 @@ namespace Servicios
                 var personaExistente = await db.PersonaContext.FindAsync(id);
                 var categoria = await db.CategoriaContext.FindAsync(0);
                 var tipo = await db.TipoContext.FindAsync(0);
-                var cuenta= await db.CuentaContext.FindAsync(transaccion.cuenta.Id);
+                var cuenta= await db.CuentaContext.FindAsync(transaccion.CuentaId);
 
                 if (personaExistente == null|| categoria==null|| tipo==null|| cuenta==null)
                 {
                     return null;
                 }
-                transaccion.cuenta.persona = personaExistente;
                 transaccion.categoria = categoria;
                 transaccion.tipo = tipo;
                 transaccion.cuenta = cuenta;
@@ -36,6 +36,23 @@ namespace Servicios
                 return nuevaTransaccion;
             }
 
+        }
+        public async Task<int> deleteTransaccion(int idTransaccion, int id)
+        {
+            using (var db = new PostgresContext())
+            {
+                var personaExistente = await db.PersonaContext.FindAsync(id);
+                var transaccionExiste= await db.TransaccionContext.FindAsync(idTransaccion);
+
+                if (personaExistente == null || transaccionExiste== null)
+                {
+                    return 0;
+                }
+
+                var nuevaTransaccion =  db.TransaccionContext.Where(tr=>tr.id==idTransaccion).ExecuteDelete();
+                await db.SaveChangesAsync();
+                return nuevaTransaccion;
+            }
         }
     }
 }

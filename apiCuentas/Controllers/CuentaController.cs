@@ -1,4 +1,4 @@
-﻿using entidades;
+﻿using Entidades;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
@@ -54,15 +54,32 @@ namespace apiCuentas.Controllers
             {
                 return BadRequest();
             }
-            var result = await servicioCuenta.obtenerCuenta(int.Parse(claim.Value.ToString()));
+            var result = await servicioCuenta.obtenerCuentas(int.Parse(claim.Value.ToString()));
             return Ok(result);
         }
 
-        [HttpDelete]
+        [HttpGet("{idcuenta}")]
         [Authorize]
-        public async Task<ActionResult> RemoveCuenta([FromBody] Cuenta cuenta)
+        public async Task<ActionResult> getCuenta(int idcuenta)
         {
-            _logger.LogInformation(cuenta.Id.ToString());
+            var claims = User.Claims.Select(claim => new
+            {
+                claim.Type,
+                claim.Value
+            }).ToList();
+            var claim = claims.Find(x => x.Type == "id");
+            if (claim == null)
+            {
+                return BadRequest();
+            }
+            var result = await servicioCuenta.obtenerCuenta(int.Parse(claim.Value.ToString()),idcuenta);
+            return Ok(result);
+        }
+
+        [HttpDelete("{idcuenta}")]
+        [Authorize]
+        public async Task<ActionResult> RemoveCuenta(int idcuenta)      
+        {
             var claims = User.Claims.Select(claim => new
             {
                 claim.Type,
@@ -75,7 +92,7 @@ namespace apiCuentas.Controllers
             }
             var id = int.Parse(claim.Value.ToString());
 
-            var result =await servicioCuenta.deleteCuenta(cuenta, id);
+            var result =await servicioCuenta.deleteCuenta(idcuenta, id);
             return Ok(result);
         }
     }

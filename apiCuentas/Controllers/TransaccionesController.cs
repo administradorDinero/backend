@@ -1,5 +1,4 @@
 ﻿using apiCuentas.helpers;
-using entidades;
 using Entidades;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -37,7 +36,7 @@ namespace apiCuentas.Controllers
                 return BadRequest();
             }
             var id = int.Parse(claim.Value.ToString());
-            _logger.LogInformation(tr.cuenta.Id.ToString());
+            _logger.LogInformation(tr.CuentaId.ToString());
             Transaccion nuevatransaccion = await servicioTransacciones.InsertTransaccion(tr,id);
             return Ok(nuevatransaccion);
         }
@@ -52,5 +51,26 @@ namespace apiCuentas.Controllers
             }
             return Ok("All well"); 
         }
+
+        [HttpDelete("{idTransaccion}")]
+
+        [Authorize]
+        public async Task<ActionResult> deleteTransaccion(int idTransaccion)
+        {
+
+            var claims = User.Claims.Select(claim => new
+            {
+                claim.Type,
+                claim.Value
+            }).ToList();
+            var claim = claims.Find(x => x.Type == "id");
+            if (claim == null)
+            {
+                return BadRequest();
+            }
+            var id = int.Parse(claim.Value.ToString());
+            int nuevatransaccion = await servicioTransacciones.deleteTransaccion(idTransaccion, id);
+            return Ok(nuevatransaccion);
+        }
+        }
     }
-}

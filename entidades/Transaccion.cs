@@ -1,5 +1,4 @@
-﻿using entidades;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -20,12 +19,21 @@ namespace Entidades
         public double cantidad {  get; set; }
         public DateTime fecha { get; set; }
         public String? descripcion { get; set; }
-        [Required]    
-        public Cuenta cuenta { get; set; }
+        public int CuentaId { get; set; }
+        [JsonIgnore]
+        public Cuenta? cuenta { get; set; } = null;
         [JsonIgnore]
         public Categoria? categoria { get; set; }
         [JsonIgnore]
         public Tipo? tipo { get; set; }
 
+    }
+    public class TransaccionDto
+    {
+        public int Id { get; set; }
+        public double Cantidad { get; set; }
+        public DateTime Fecha { get; set; }
+        public string? Descripcion { get; set; }
+        public int CuentaId { get; set; } // Incluye solo la propiedad necesaria
     }
 }

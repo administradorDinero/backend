@@ -1,4 +1,4 @@
-﻿using entidades;
+﻿using Entidades;
 using FluentValidation;
 using Repositorio;
 using System;

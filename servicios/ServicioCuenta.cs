@@ -1,5 +1,4 @@
-﻿using entidades;
-using Entidades;
+﻿using Entidades;
 using Microsoft.EntityFrameworkCore;
 using Repositorio;
 using Servicios.validaciones;
@@ -20,18 +19,60 @@ namespace Servicios
         {
             this.cuentaValidacion = new CuentaValidacion();
         }
-        public async Task<List<Cuenta>> obtenerCuenta(int id)
+        public async Task<List<CuentaDto>> obtenerCuentas(int id)
         {
             using (var db = new PostgresContext())
             {
 
-                List<Cuenta> cuentas = await db.CuentaContext.Where(x => x.persona.Id == id).ToListAsync();
-
+                List<Cuenta> cuentas = await db.CuentaContext.Include(c=> c.Transaccions.OrderByDescending(t => t.fecha).Take(2)).Where(x => x.persona.Id == id).ToListAsync();
+                var cuentasDto = cuentas.Select(c => new CuentaDto
+                {
+                    Id = c.Id,
+                    Valor = c.valor,
+                    Descripcion = c.descripcion,
+                    Transacciones = c.Transaccions?.Select(t => new TransaccionDto
+                    {
+                        Id = t.id,
+                        Cantidad = t.cantidad,
+                        Fecha = t.fecha,
+                        Descripcion = t.descripcion,
+                        CuentaId = c.Id
+                    }).ToList()
+                }).ToList();
                 if (cuentas == null)
                 {
                     return null;
                 }
-                return cuentas;
+                return cuentasDto;
+     
+            }
+        }
+        public async Task<List<CuentaDto>> obtenerCuenta(int id,int id_cuenta)
+        {
+            using (var db = new PostgresContext())
+            {
+
+                List<Cuenta> cuentas = await db.CuentaContext.Include(c => c.Transaccions.OrderByDescending(t => t.fecha)).Where(x => x.persona.Id == id && x.Id== id_cuenta).ToListAsync() ;
+                var cuentasDto = cuentas.Select(c => new CuentaDto
+                {
+                    Id = c.Id,
+                    Valor = c.valor,
+                    Descripcion = c.descripcion,
+                    Transacciones = c.Transaccions?.Select(t => new TransaccionDto
+                    {
+                        Id = t.id,
+                        Cantidad = t.cantidad,
+                        Fecha = t.fecha,
+                        Descripcion = t.descripcion,
+                        CuentaId = c.Id
+                    }).ToList()
+                }).ToList();
+                if (cuentas == null)
+                {
+                    return null;
+                }
+                return cuentasDto;
+
             }
         }
         public async Task<Cuenta> crearCuentaAsync(Cuenta cuenta,int personaId) {
@@ -60,7 +101,7 @@ namespace Servicios
             }
 
         }
-        public async Task<int> deleteCuenta(Cuenta cuenta, int id)
+        public async Task<int> deleteCuenta(int idcuenta, int id)
         {
 
             using (var db = new PostgresContext())
@@ -70,7 +111,7 @@ namespace Servicios
                 {
                     return 0;
                 }
-                var deleted =await db.CuentaContext.Where(c => c.Id == cuenta.Id).ExecuteDeleteAsync();
+                var deleted =await db.CuentaContext.Where(c => c.Id == idcuenta).ExecuteDeleteAsync();
                 await db.SaveChangesAsync();
                 return deleted;
             }

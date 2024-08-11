@@ -8,9 +8,9 @@ namespace Entidades
 {
     public class CuentaDto
     {
-        public double valor { get; set; }
-
-        public string? descripcion { get; set; }
-
+        public int Id { get; set; }
+        public double? Valor { get; set; }
+        public string? Descripcion { get; set; }
+        public List<TransaccionDto>? Transacciones  { get; set; }
     }
 }

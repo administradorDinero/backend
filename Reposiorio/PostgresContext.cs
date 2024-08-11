@@ -1,5 +1,4 @@
-﻿using entidades;
-using Entidades;
+﻿using Entidades;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
@@ -23,6 +22,17 @@ namespace Repositorio
         {
             IConfigurationRoot config = new ConfigurationBuilder().AddUserSecrets<PostgresContext>().Build();
             optionsBuilder.UseNpgsql(config["ConnectionString"]);
+        }
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Transaccion>()
+                .Property(t => t.CuentaId)
+                .HasColumnName("cuentaId");
+             modelBuilder.Entity<Transaccion>()
+                .HasOne(t => t.cuenta)
+                .WithMany(c => c.Transaccions)
+                .HasForeignKey(t => t.CuentaId); // Asegúrate de que este nombre es consistente con tu modelo
+            
         }
 
         public PostgresContext(DbContextOptions<PostgresContext> options) : base(options)

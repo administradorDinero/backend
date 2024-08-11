@@ -25,7 +25,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(setup =>
 {
-    //Configuracion de la open api para la autenticación de token.
+    //Configuracion de la open api para la autenticación de token en swagger.
     var jwtSecurityScheme = new OpenApiSecurityScheme
     {
         BearerFormat = "JWT",
@@ -50,6 +50,16 @@ builder.Services.AddSwaggerGen(setup =>
 
 });
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowSpecificOrigin",
+        builder => builder
+            .WithOrigins("http://localhost:5173") // Cambia esto a la URL de tu frontend
+            .AllowAnyMethod()
+            .AllowAnyHeader());
+});
+
+
 
 builder.Services.AddAuthentication("Bearer").AddJwtBearer(x=>
      x.TokenValidationParameters = new TokenValidationParameters
@@ -64,6 +74,10 @@ builder.Services.AddAuthentication("Bearer").AddJwtBearer(x=>
          ValidateAudience = false,
          ClockSkew = TimeSpan.Zero
      });
+builder.Services.AddDbContext<PostgresContext>(options =>
+    options.UseNpgsql(builder.Configuration.GetConnectionString("Host=192.168.1.58:5432;Database=AdministradorDinero;Username=yourusername;Password=yourpassword")));
+
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -72,6 +86,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+app.UseCors("AllowSpecificOrigin");
 
 app.UseHttpsRedirection();
 

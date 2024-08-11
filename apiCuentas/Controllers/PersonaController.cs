@@ -51,7 +51,7 @@ namespace apiCuentas.Controllers
             var logged = await servicePersona.login(persona);
 
             if (logged != null && logged.Id > 0) {
-                return Ok(auth.GenerateJWTToken(logged));
+                return Ok(new{token=auth.GenerateJWTToken(logged)});
             }
             else
             {
