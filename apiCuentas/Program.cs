@@ -16,6 +16,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddScoped<ServicePersona>();
 builder.Services.AddScoped<AuthHelpers>();
 builder.Services.AddScoped<ServicioCuenta>();
+builder.Services.AddScoped<ServicioCategorias>();
 builder.Services.AddScoped<ServicioTransacciones>();
 
 

@@ -51,6 +51,25 @@ namespace apiCuentas.Controllers
             }
             return Ok("All well"); 
         }
+        [HttpGet]
+        [Authorize]
+        public async Task<ActionResult> getTransaciones()
+        {
+
+            var claims = User.Claims.Select(claim => new
+            {
+                claim.Type,
+                claim.Value
+            }).ToList();
+            var claim = claims.Find(x => x.Type == "id");
+            if (claim == null)
+            {
+                return BadRequest();
+            }
+            var id = int.Parse(claim.Value.ToString());
+            List<TransaccionDto> Transacciones= await servicioTransacciones.TransaccionesUsuario(id);
+            return Ok(Transacciones);
+        }
 
         [HttpDelete("{idTransaccion}")]
 

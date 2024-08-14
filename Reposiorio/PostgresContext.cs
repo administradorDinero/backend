@@ -31,8 +31,12 @@ namespace Repositorio
              modelBuilder.Entity<Transaccion>()
                 .HasOne(t => t.cuenta)
                 .WithMany(c => c.Transaccions)
-                .HasForeignKey(t => t.CuentaId); // Asegúrate de que este nombre es consistente con tu modelo
-            
+                .HasForeignKey(t => t.CuentaId);
+            modelBuilder.Entity<Categoria>()
+                .HasOne(c => c.Persona)
+                .WithMany(p => p.Categorias) 
+                .HasForeignKey(c => c.PersonaId);
+
         }
 
         public PostgresContext(DbContextOptions<PostgresContext> options) : base(options)

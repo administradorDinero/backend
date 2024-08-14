@@ -22,7 +22,6 @@ namespace Entidades
         public int CuentaId { get; set; }
         [JsonIgnore]
         public Cuenta? cuenta { get; set; } = null;
-        [JsonIgnore]
         public Categoria? categoria { get; set; }
         [JsonIgnore]
         public Tipo? tipo { get; set; }

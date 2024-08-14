@@ -5,6 +5,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Text.Json.Serialization;
 
 namespace Entidades
 {
@@ -15,5 +16,8 @@ namespace Entidades
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
         public string? CategoriaNo { get; set; }
+        public int PersonaId { get; set; }
+        [JsonIgnore]
+        public Persona? Persona { get; set; }
     }
 }
