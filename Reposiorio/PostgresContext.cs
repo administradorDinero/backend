@@ -17,6 +17,7 @@ namespace Repositorio
         public DbSet<Tipo> TipoContext { get; set; }
         public DbSet<Categoria> CategoriaContext { get; set; }
         public DbSet<Transaccion> TransaccionContext { get; set; }
+        public DbSet<Estado> EstadoContext { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

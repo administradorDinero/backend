@@ -63,7 +63,7 @@ namespace Servicios
             
             using(var db = new PostgresContext())
             {
-                
+
                  return await db.PersonaContext
             .Where(x => x.Id == id)
             .Select(x => new PersonaDto

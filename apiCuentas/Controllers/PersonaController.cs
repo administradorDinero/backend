@@ -79,5 +79,26 @@ namespace apiCuentas.Controllers
             }
             return Ok(result);
         }
+        [HttpGet("/ValidToken")]
+        [Authorize]
+        public async Task<ActionResult> validarToken()
+        {
+            var claims = User.Claims.Select(claim => new
+            {
+                claim.Type,
+                claim.Value
+            }).ToList();
+            var claim = claims.Find(x => x.Type == "id");
+            if (claim == null)
+            {
+                return BadRequest();
+            }
+            var result = await servicePersona.informacion(int.Parse(claim.Value.ToString()));
+            if (result == null)
+            {
+                return BadRequest();
+            }
+            return Ok();
+        }
     }
 }

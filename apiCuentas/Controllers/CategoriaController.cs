@@ -59,7 +59,24 @@ namespace apiCuentas.Controllers
             var categoriaPersona = await servicioCategoria.createCategorias(categoria,idPersona);
             return Ok(categoriaPersona);
         }
-
+        [HttpDelete]
+        [Authorize]
+        public async Task<ActionResult> deleteCategoria(Categoria categoria)
+        {
+            var claims = User.Claims.Select(claim => new
+            {
+                claim.Type,
+                claim.Value
+            }).ToList();
+            var claim = claims.Find(x => x.Type == "id");
+            if (claim == null)
+            {
+                return BadRequest();
+            }
+            var idPersona = int.Parse(claim.Value.ToString());
+            var categoriaPersona = await servicioCategoria.EliminarCategoria(categoria, idPersona);
+            return Ok(categoriaPersona);
+        }
 
     }
 }

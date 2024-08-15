@@ -22,12 +22,19 @@ namespace Servicios
             {
                 var personaExistente = await db.PersonaContext.FindAsync(id);
 
-                if ((transaccion.categoria?.Id??0)==0)
+                if ((transaccion.categoria?.Id??0)!=0)
                 {
-                   var categoriaId= await db.CategoriaContext.Where(x=>x.PersonaId==id&&x.CategoriaNo=="Default").FirstOrDefaultAsync();
-                    if (categoriaId==null)
+                    var categoriaFind = await db.CategoriaContext.FindAsync(transaccion.categoria.Id);
+                    transaccion.categoria = categoriaFind;
+                    Console.WriteLine(categoriaFind.Id);
+                }
+                else
+                {
+                    var categoriaId = await db.CategoriaContext.Where(x => x.PersonaId == id && x.CategoriaNo == "Default").FirstOrDefaultAsync();
+                    var estado = await db.EstadoContext.FindAsync(2);
+                    if (categoriaId == null)
                     {
-                        transaccion.categoria=  db.CategoriaContext.Add(new Categoria { CategoriaNo = "Default", PersonaId = id }).Entity;
+                        transaccion.categoria = db.CategoriaContext.Add(new Categoria { CategoriaNo = "Default", PersonaId = id, Estado = estado }).Entity;
                         db.SaveChanges();
                     }
                     else
@@ -35,6 +42,8 @@ namespace Servicios
                         transaccion.categoria = categoriaId;
                     }
                 }
+                
+                
                 var tipo = await db.TipoContext.FindAsync(0);
                 var cuenta= await db.CuentaContext.FindAsync(transaccion.CuentaId);
 
@@ -68,7 +77,7 @@ namespace Servicios
             }
         }
 
-        public async Task<List<TransaccionDto>> TransaccionesUsuario(int id)
+        public async Task<List<Transaccion>> TransaccionesUsuario(int id)
         {
             using (var db = new PostgresContext())
             {
@@ -81,15 +90,15 @@ namespace Servicios
                 var transacciones = await db.CuentaContext
                  .Where(c => c.persona.Id == id)
                  .SelectMany(c => c.Transaccions
-                     .OrderByDescending(t => t.fecha)
-                     .Select(t => new TransaccionDto
+                     .OrderByDescending(t => t.fecha))
+                    /* .Select(t => new TransaccionDto
                      {
                          Id = t.id,
                          Cantidad = t.cantidad,
                          Fecha = t.fecha,
                          Descripcion = t.descripcion,
                          CuentaId = c.Id
-                     }))
+                     }))*/
                  .ToListAsync();
 
                 return transacciones;

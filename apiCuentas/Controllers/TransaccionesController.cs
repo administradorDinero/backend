@@ -36,7 +36,7 @@ namespace apiCuentas.Controllers
                 return BadRequest();
             }
             var id = int.Parse(claim.Value.ToString());
-            _logger.LogInformation(tr.CuentaId.ToString());
+            _logger.LogInformation(tr.categoria?.CategoriaNo);
             Transaccion nuevatransaccion = await servicioTransacciones.InsertTransaccion(tr,id);
             return Ok(nuevatransaccion);
         }
@@ -67,7 +67,7 @@ namespace apiCuentas.Controllers
                 return BadRequest();
             }
             var id = int.Parse(claim.Value.ToString());
-            List<TransaccionDto> Transacciones= await servicioTransacciones.TransaccionesUsuario(id);
+            List<Transaccion> Transacciones= await servicioTransacciones.TransaccionesUsuario(id);
             return Ok(Transacciones);
         }
 

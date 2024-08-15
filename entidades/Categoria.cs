@@ -16,8 +16,13 @@ namespace Entidades
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
         public string? CategoriaNo { get; set; }
-        public int PersonaId { get; set; }
         [JsonIgnore]
+        public int? PersonaId { get; set; }
+        [JsonIgnore]    
         public Persona? Persona { get; set; }
+        public int? EstadoId { get; set; }
+        // Propiedad de navegación
+        public Estado? Estado { get; set; }
+
     }
 }
