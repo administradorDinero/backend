@@ -32,7 +32,7 @@ namespace Servicios
                     Descripcion = c.descripcion,
                     Transacciones = c.Transaccions?.Select(t => new TransaccionDto
                     {
-                        Id = t.id,
+                        Id = t.Id,
                         Cantidad = t.cantidad,
                         Fecha = t.fecha,
                         Descripcion = t.descripcion,
@@ -60,7 +60,7 @@ namespace Servicios
                     Descripcion = c.descripcion,
                     Transacciones = c.Transaccions?.Select(t => new TransaccionDto
                     {
-                        Id = t.id,
+                        Id = t.Id,
                         Cantidad = t.cantidad,
                         Fecha = t.fecha,
                         Descripcion = t.descripcion,

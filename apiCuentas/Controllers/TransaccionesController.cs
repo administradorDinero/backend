@@ -43,7 +43,7 @@ namespace apiCuentas.Controllers
         [Route("/status")]
         [HttpGet]
         public ActionResult status()
-        {
+        {   
             // Leer los encabezados
             foreach (var header in Request.Headers)
             {
@@ -67,7 +67,7 @@ namespace apiCuentas.Controllers
                 return BadRequest();
             }
             var id = int.Parse(claim.Value.ToString());
-            List<Transaccion> Transacciones= await servicioTransacciones.TransaccionesUsuario(id);
+            List<TransaccionDto> Transacciones= await servicioTransacciones.TransaccionesUsuario(id);
             return Ok(Transacciones);
         }
 

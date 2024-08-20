@@ -54,7 +54,7 @@ namespace Servicios
                 transaccion.tipo = tipo;
                 transaccion.cuenta = cuenta;
                 Transaccion nuevaTransaccion = db.TransaccionContext.Add(transaccion).Entity;
-                await db.SaveChangesAsync();
+                 db.SaveChanges();
                 return nuevaTransaccion;
             }
 
@@ -71,13 +71,13 @@ namespace Servicios
                     return 0;
                 }
 
-                var nuevaTransaccion =  db.TransaccionContext.Where(tr=>tr.id==idTransaccion).ExecuteDelete();
+                var nuevaTransaccion =  db.TransaccionContext.Where(tr=>tr.Id==idTransaccion).ExecuteDelete();
                 await db.SaveChangesAsync();
                 return nuevaTransaccion;
             }
         }
 
-        public async Task<List<Transaccion>> TransaccionesUsuario(int id)
+        public async Task<List<TransaccionDto>> TransaccionesUsuario(int id)
         {
             using (var db = new PostgresContext())
             {
@@ -90,15 +90,14 @@ namespace Servicios
                 var transacciones = await db.CuentaContext
                  .Where(c => c.persona.Id == id)
                  .SelectMany(c => c.Transaccions
-                     .OrderByDescending(t => t.fecha))
-                    /* .Select(t => new TransaccionDto
+                     .OrderByDescending(t => t.fecha).Select(t => new TransaccionDto
                      {
-                         Id = t.id,
+                         Id = t.Id,
                          Cantidad = t.cantidad,
                          Fecha = t.fecha,
                          Descripcion = t.descripcion,
                          CuentaId = c.Id
-                     }))*/
+                     }).ToList())
                  .ToListAsync();
 
                 return transacciones;
