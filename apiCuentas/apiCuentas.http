@@ -1,0 +1,5 @@
+@apiCuentas_HostAddress = http://192.168.1.129:5091
+
+GET {{apiCuentas_HostAddress}}/status
+Accept: application/json
+###
