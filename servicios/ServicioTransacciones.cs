@@ -88,9 +88,9 @@ namespace Servicios
                     return null;
                 }
                 var transacciones = await db.CuentaContext
-                 .Where(c => c.persona.Id == id).Skip((pageNumber - 1) * pageSize)
+                 .Where(c => c.persona.Id == id)
+                 .SelectMany(c => c.Transaccions.Skip((pageNumber - 1) * pageSize)
                      .Take(pageSize)
-                 .SelectMany(c => c.Transaccions
                      .OrderByDescending(t => t.fecha).Select(t => new TransaccionDto
                      {
                          Id = t.Id,

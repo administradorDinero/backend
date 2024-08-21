@@ -33,7 +33,7 @@ namespace Servicios
                 {
                     return null;
                 }
-                categoria.Id = idPersona;
+                categoria.PersonaId = idPersona;
                 categoria.Persona = persona;
                 categoria.Estado = await db.EstadoContext.FindAsync(2);
                 categoria.EstadoId = categoria.Estado.Id;
@@ -54,9 +54,12 @@ namespace Servicios
                 }
                 categoria.Id = idPersona;
                 categoria.Persona = persona;
-                Categoria categoriaReturn = await db.CategoriaContext.FindAsync(categoria);
+                Categoria? categoriaReturn = await db.CategoriaContext.FindAsync(categoria);
+                if (categoriaReturn == null) {
+                    return null;
+                }
                 categoriaReturn.Estado = await db.EstadoContext.FindAsync(1);
-                db.SaveChangesAsync();
+                await db.SaveChangesAsync();
                 return categoriaReturn;
 
             }
@@ -70,8 +73,7 @@ namespace Servicios
                 {
                     return null;
                 }
-                List<categoriaDto> categoriasDto = await db.CategoriaContext.Skip((pageNumber - 1) * pageSize)
-                     .Take(pageSize)
+                List<categoriaDto> categoriasDto = await db.CategoriaContext
                      .Select(c => new categoriaDto
                      {
                          Id = c.Id,
