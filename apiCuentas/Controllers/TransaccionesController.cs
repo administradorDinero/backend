@@ -53,7 +53,7 @@ namespace apiCuentas.Controllers
         }
         [HttpGet]
         [Authorize]
-        public async Task<ActionResult> getTransaciones()
+        public async Task<ActionResult> getTransaciones(int Paginacion = 1, int tamaño = 20)
         {
 
             var claims = User.Claims.Select(claim => new
@@ -67,7 +67,7 @@ namespace apiCuentas.Controllers
                 return BadRequest();
             }
             var id = int.Parse(claim.Value.ToString());
-            List<TransaccionDto> Transacciones= await servicioTransacciones.TransaccionesUsuario(id);
+            List<TransaccionDto> Transacciones= await servicioTransacciones.TransaccionesUsuario(id, Paginacion, tamaño);
             return Ok(Transacciones);
         }
 

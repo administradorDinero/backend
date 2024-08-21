@@ -5,8 +5,10 @@ using Repositorio;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection.Metadata.Ecma335;
 using System.Text;
 using System.Threading.Tasks;
+using static Entidades.categoriaDto;
 
 namespace Servicios
 {
@@ -59,5 +61,42 @@ namespace Servicios
 
             }
         }
+        public async Task<List<categoriaDto>> CategoriaByTransaccion(int idPersona, int pageNumber, int pageSize)
+        {
+            using (var db = new PostgresContext())
+            {
+                Persona? persona = await db.PersonaContext.FirstOrDefaultAsync(x => x.Id == idPersona);
+                if (persona == null)
+                {
+                    return null;
+                }
+                List<categoriaDto> categoriasDto = await db.CategoriaContext.Skip((pageNumber - 1) * pageSize)
+                     .Take(pageSize)
+                     .Select(c => new categoriaDto
+                     {
+                         Id = c.Id,
+                         CategoriaNo = c.CategoriaNo,
+                         Transacciones = db.TransaccionContext.Where(t => t.categoria.Id==c.Id)
+                             .Select(t => new TransaccionDto
+                             {
+                                 Id = t.Id,
+                                 Cantidad = t.cantidad,
+                                 Fecha = t.fecha,
+                                 Descripcion = t.descripcion,
+                                 CuentaId = t.CuentaId
+                             }).ToList()
+                     })
+                     .ToListAsync();
+                if (categoriasDto == null)
+                {
+                    return new List<categoriaDto>();
+                }
+
+                return categoriasDto;
+
+            }
+        }
+
+
     }
 }

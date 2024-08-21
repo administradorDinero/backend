@@ -77,7 +77,7 @@ namespace Servicios
             }
         }
 
-        public async Task<List<TransaccionDto>> TransaccionesUsuario(int id)
+        public async Task<List<TransaccionDto>> TransaccionesUsuario(int id, int pageNumber, int pageSize)
         {
             using (var db = new PostgresContext())
             {
@@ -88,7 +88,8 @@ namespace Servicios
                     return null;
                 }
                 var transacciones = await db.CuentaContext
-                 .Where(c => c.persona.Id == id)
+                 .Where(c => c.persona.Id == id).Skip((pageNumber - 1) * pageSize)
+                     .Take(pageSize)
                  .SelectMany(c => c.Transaccions
                      .OrderByDescending(t => t.fecha).Select(t => new TransaccionDto
                      {

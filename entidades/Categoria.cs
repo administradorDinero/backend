@@ -18,7 +18,7 @@ namespace Entidades
         public string? CategoriaNo { get; set; }
         [JsonIgnore]
         public int? PersonaId { get; set; }
-        [JsonIgnore]    
+        [JsonIgnore]
         public Persona? Persona { get; set; }
         public int? EstadoId { get; set; }
         // Propiedad de navegación

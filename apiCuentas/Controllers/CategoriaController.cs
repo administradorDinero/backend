@@ -77,6 +77,27 @@ namespace apiCuentas.Controllers
             var categoriaPersona = await servicioCategoria.EliminarCategoria(categoria, idPersona);
             return Ok(categoriaPersona);
         }
+        [HttpGet("ByTransacciones")]
+        [Authorize]
+        public async Task<ActionResult> categoriaByTransaccion(int Paginacion=1,int tamaño=20)
+        {
+
+            var claims = User.Claims.Select(claim => new
+            {
+                claim.Type,
+                claim.Value
+            }).ToList();
+            var claim = claims.Find(x => x.Type == "id");
+            if (claim == null)
+            {
+                return BadRequest();
+            }
+            var idPersona = int.Parse(claim.Value.ToString());
+            var categoriaPersona = await servicioCategoria.CategoriaByTransaccion(idPersona,Paginacion,tamaño);
+            return Ok(categoriaPersona);
+        }
+
+
 
     }
 }
