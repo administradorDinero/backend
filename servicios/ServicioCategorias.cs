@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Scaffolding.Metadata;
 using Repositorio;
 using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Linq   ;
 using System.Reflection.Metadata.Ecma335;
 using System.Text;
 using System.Threading.Tasks;
@@ -43,7 +43,7 @@ namespace Servicios
 
             }
         }
-        public async Task<Categoria> EliminarCategoria(Categoria categoria, int idPersona)
+        public async Task<Categoria> EliminarCategoria(int id, int idPersona)
         {
             using (var db = new PostgresContext())
             {
@@ -52,9 +52,7 @@ namespace Servicios
                 {
                     return null;
                 }
-                categoria.Id = idPersona;
-                categoria.Persona = persona;
-                Categoria? categoriaReturn = await db.CategoriaContext.FindAsync(categoria);
+                Categoria? categoriaReturn = await db.CategoriaContext.Where(c => c.Id==id && c.PersonaId==idPersona).FirstOrDefaultAsync();
                 if (categoriaReturn == null) {
                     return null;
                 }
@@ -73,7 +71,7 @@ namespace Servicios
                 {
                     return null;
                 }
-                List<categoriaDto> categoriasDto = await db.CategoriaContext
+                List<categoriaDto> categoriasDto = await db.CategoriaContext.Where(c=>c.EstadoId==2)
                      .Select(c => new categoriaDto
                      {
                          Id = c.Id,
