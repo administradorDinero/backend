@@ -8,4 +8,4 @@ services:
       - "8080:8080"  # Mapea el puerto del contenedor al puerto de tu máquina host
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
-      - ConnectionStrings=Host=db;Database=AdministradorDinero;Username=yourusername;Password=yourpassword
+      - ConnectionStrings=Host=192.168.1.58;Database=AdministradorDinero;Username=yourusername;Password=yourpassword
