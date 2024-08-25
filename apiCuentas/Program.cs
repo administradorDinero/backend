@@ -54,9 +54,8 @@ builder.Services.AddSwaggerGen(setup =>
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowSpecificOrigin",
-        builder => builder
-            .WithOrigins("http://localhost:5173") // Cambia esto a la URL de tu frontend
-            .AllowAnyMethod()
+        builder => builder.AllowAnyOrigin()
+        .AllowAnyMethod()
             .AllowAnyHeader());
 });
 
