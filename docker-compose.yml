@@ -3,7 +3,7 @@ services:
   apicuentas:
     build:
       context: .
-      dockerfile: apiCuentas/Dockerfile
+      dockerfile: apiCuentas/dockerfile
     ports:
       - "8080:8080"  # Mapea el puerto del contenedor al puerto de tu máquina host
     environment:
