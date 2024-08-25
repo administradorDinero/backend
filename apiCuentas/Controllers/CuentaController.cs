@@ -23,7 +23,7 @@ namespace apiCuentas.Controllers
         [Authorize]
         public async Task<ActionResult> postCuenta(Cuenta cuenta)
         {
-
+            Console.WriteLine(cuenta.valor      );
             var claims = User.Claims.Select(claim => new
             {
                 claim.Type,
@@ -35,7 +35,7 @@ namespace apiCuentas.Controllers
                 return BadRequest();
             }
             var id = int.Parse(claim.Value.ToString());
-            _logger.LogInformation(cuenta.Id.ToString());
+            _logger.LogInformation(cuenta.valor.ToString());
             var cuentaCreada=await servicioCuenta.crearCuentaAsync(cuenta, id);
             return Ok(cuentaCreada);
         }

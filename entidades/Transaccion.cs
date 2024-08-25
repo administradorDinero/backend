@@ -14,7 +14,6 @@ namespace Entidades
 
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        [JsonIgnore]
         public int Id { get; set; }  
         public double cantidad {  get; set; }
         public DateTime fecha { get; set; }
