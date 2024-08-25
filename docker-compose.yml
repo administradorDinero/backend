@@ -9,8 +9,8 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
     secrets:
-      - db_connection_string  
+      - Connection_strings  
 
 secrets:
-  db_connection_string:
+  Connection_strings:
     external: true
