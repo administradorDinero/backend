@@ -1,0 +1,22 @@
+# Use the official .NET image
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
+WORKDIR /app
+EXPOSE 80
+
+# Use the SDK image for build
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+WORKDIR /src
+COPY ["apiCuentas/apiCuentas.csproj", "apiCuentas/"]
+RUN dotnet restore "apiCuentas/apiCuentas.csproj"
+COPY . .
+WORKDIR "/src/apiCuentas"
+RUN dotnet build "apiCuentas.csproj" -c Release -o /app/build
+
+FROM build AS publish
+RUN dotnet publish "apiCuentas.csproj" -c Release -o /app/publish
+
+# Final stage / runtime image
+FROM base AS final
+WORKDIR /app
+COPY --from=publish /app/publish .
+ENTRYPOINT ["dotnet", "apiCuentas.dll"]
