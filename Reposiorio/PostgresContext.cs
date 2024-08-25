@@ -21,8 +21,15 @@ namespace Repositorio
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            IConfigurationRoot config = new ConfigurationBuilder().AddUserSecrets<PostgresContext>().Build();
-            optionsBuilder.UseNpgsql(config["ConnectionString"]);
+            var connectionString = Environment.GetEnvironmentVariable("ConnectionStrings");
+
+            if (string.IsNullOrEmpty(connectionString))
+            {
+                throw new InvalidOperationException("Connection string not found in environment variables.");
+            }
+
+            // Configurar el DbContext para usar Npgsql con la cadena de conexión desde variables de entorno
+            optionsBuilder.UseNpgsql(connectionString);
         }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

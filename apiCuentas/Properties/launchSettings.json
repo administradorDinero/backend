@@ -16,7 +16,8 @@
       "launchUrl": "swagger",
       "applicationUrl": "http://*:5091",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "ConnectionStrings": "Host=192.168.1.58;Database=AdministradorDinero;Username=yourusername;Password=yourpassword"
       }
     },
     "https": {
