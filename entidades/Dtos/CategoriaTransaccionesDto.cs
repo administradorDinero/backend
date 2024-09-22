@@ -4,14 +4,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Entidades
+namespace Entidades.Dtos
 {
-    public class CuentaDto
+    public class CategoriaTransaccionesDto
     {
         public int Id { get; set; }
-        public double? Valor { get; set; }
-        public string? Descripcion { get; set; }
-        public List<TransaccionDto>? Transacciones  { get; set; }
+        public string CategoriaNo { get; set; }
+        public List<TransaccionDto> Transacciones { get; set; } = new List<TransaccionDto>();
         public string? color { get; set; }
+
     }
 }

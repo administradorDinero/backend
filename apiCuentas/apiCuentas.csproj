@@ -23,5 +23,7 @@
     <ProjectReference Include="..\Reposiorio\Repositorio.csproj" />
     <ProjectReference Include="..\servicios\Servicios.csproj" />
   </ItemGroup>
-
+	<PropertyGroup>
+		<GenerateDocumentationFile>true</GenerateDocumentationFile>
+	</PropertyGroup>
 </Project>

@@ -32,6 +32,10 @@ namespace Entidades
         public double Cantidad { get; set; }
         public DateTime Fecha { get; set; }
         public string? Descripcion { get; set; }
-        public int CuentaId { get; set; } // Incluye solo la propiedad necesaria
+        public Categoria? categoria { get; set; }
+
+        public int CuentaId { get; set; }
+        
+        public string? ColorCuenta { get; set; }
     }
 }

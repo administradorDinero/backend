@@ -18,6 +18,8 @@ namespace Entidades
         [JsonIgnore]
         public Persona? persona { get; set; }
         public virtual ICollection<Transaccion>? Transaccions { get; set; }
+        public string? color { get; set; }
+
 
         public static implicit operator Cuenta(Categoria v)
         {

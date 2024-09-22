@@ -91,5 +91,25 @@ namespace apiCuentas.Controllers
             int nuevatransaccion = await servicioTransacciones.deleteTransaccion(idTransaccion, id);
             return Ok(nuevatransaccion);
         }
+        [HttpPut]
+
+        [Authorize]
+        public async Task<ActionResult> putTransaccion(TransaccionDto transaccion)
+        {
+
+            var claims = User.Claims.Select(claim => new
+            {
+                claim.Type,
+                claim.Value
+            }).ToList();
+            var claim = claims.Find(x => x.Type == "id");
+            if (claim == null)
+            {
+                return BadRequest();
+            }
+            var id = int.Parse(claim.Value.ToString());
+            bool nuevatransaccion = await servicioTransacciones.ActualizarTransaccionAsync(transaccion, id);
+            return Ok(nuevatransaccion);
         }
     }
+}

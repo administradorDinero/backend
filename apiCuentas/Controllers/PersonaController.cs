@@ -1,13 +1,18 @@
-﻿using apiCuentas.helpers;
+﻿            using apiCuentas.helpers;
 using Entidades;
+using Entidades.Dtos;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Servicios;
 
 namespace apiCuentas.Controllers
 {
+
+    /// <summary>
+    /// Clase controladora de las acciones con los usuarios dentro de la aplicación
+    /// </summary>
     [ApiController]
-    [Route("/personas")]
+    [Route("/Usuarios")]
     public class PersonaController : Controller
     {
         ServicePersona servicePersona { get; set; }
@@ -21,16 +26,21 @@ namespace apiCuentas.Controllers
             _logger = logger;
         }
 
+        /// <summary>
+        /// Creacion de nuevos usuarios
+        /// </summary>
+        /// <param name="persona"> Recibe un parametro personas</param>
+        /// <returns> Retorna el token para el inicio de sesion del usuario</returns>
 
         [HttpPost]
-        public async Task<ActionResult> Create([FromBody] Persona persona)
+        public async Task<ActionResult> Create([FromBody] CreacionUsuarioDto persona)
         {
             try
             {
                 var created = await servicePersona.CreatePersona(persona);
                 if ( created!=null)
                 {
-                    return Ok(authHelpers.GenerateJWTToken(created));
+                    return Ok(new { token = authHelpers.GenerateJWTToken(created) });
                 }
                 else
                 {
@@ -44,8 +54,13 @@ namespace apiCuentas.Controllers
             }
         }
 
-        [HttpPost("/login")]
-        public async Task<ActionResult> login([FromBody]Persona persona)
+        /// <summary>
+        /// Control de inicio de sesión para los usuarios
+        /// </summary>
+        /// <param name="persona"></param>
+        /// <returns>Retorna el token en dado caso las credenciales sean correctas</returns>
+        [HttpPost("login")]
+        public async Task<ActionResult> login([FromBody]CredencialesUsuarioDto persona)
         {
             var auth = new AuthHelpers();
             var logged = await servicePersona.login(persona);
@@ -58,7 +73,11 @@ namespace apiCuentas.Controllers
                 return NotFound();
             }
         }
-        [HttpGet("/info")]
+        /// <summary>
+        /// Informacion de operaciones de los usuarios
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("info")]
         [Authorize]
         public async Task<ActionResult> informacionPersona()
         {
@@ -79,6 +98,8 @@ namespace apiCuentas.Controllers
             }
             return Ok(result);
         }
+
+
         [HttpGet("/ValidToken")]
         [Authorize]
         public async Task<ActionResult> validarToken()

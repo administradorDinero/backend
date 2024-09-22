@@ -1,17 +1,13 @@
 ﻿using Entidades;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Scaffolding.Metadata;
 using Repositorio;
-using System;
-using System.Collections.Generic;
-using System.Linq   ;
-using System.Reflection.Metadata.Ecma335;
-using System.Text;
-using System.Threading.Tasks;
 using static Entidades.categoriaDto;
 
 namespace Servicios
 {
+    /// <summary>
+    /// Contiene toda la logica para el tratamiento de categorias 
+    /// </summary>
     public class ServicioCategorias
     {
         public async Task<List<Categoria>> getCategorias(int idPersona)
@@ -95,6 +91,27 @@ namespace Servicios
                 return categoriasDto;
 
             }
+        }
+
+        public async Task<bool> Categoriaput(int idPersona,Categoria categoria)
+        {
+            using (var contexto = new PostgresContext())
+            {
+                var categoriaExiste = await contexto.CategoriaContext.FirstOrDefaultAsync(c => c.Id == categoria.Id && c.PersonaId == idPersona && c.Estado.Id == 2);
+
+                if (categoriaExiste == null)
+                {
+                    return false;
+                }
+
+                categoriaExiste.CategoriaNo = categoria.CategoriaNo;
+                categoriaExiste.color = categoria.color;
+                await contexto.SaveChangesAsync();
+
+                return true;
+            }
+
+
         }
 
 

@@ -97,11 +97,42 @@ namespace Servicios
                          Cantidad = t.cantidad,
                          Fecha = t.fecha,
                          Descripcion = t.descripcion,
-                         CuentaId = c.Id
+                         CuentaId = c.Id,
+                         ColorCuenta=c.color,
+                         categoria= t.categoria
                      }).ToList())
                  .ToListAsync();
 
                 return transacciones;
+            }
+        }
+        public async Task<bool> ActualizarTransaccionAsync(TransaccionDto transaccion, int id)
+        {
+            using (var contexto = new PostgresContext()) 
+            {
+                var transaccionExistente = await contexto.TransaccionContext.FirstOrDefaultAsync(c => c.Id == transaccion.Id);
+
+                if (transaccionExistente == null)
+                {
+                    return false;
+                }
+                if ((transaccion.categoria?.Id ?? 0) != 0)
+                {
+                    var categoriaFind = await contexto.CategoriaContext.FindAsync(transaccion.categoria.Id);
+                    transaccionExistente.categoria =categoriaFind;
+                }
+                var cuenta = await contexto.CuentaContext.FindAsync(transaccion.CuentaId);
+
+                if (cuenta!=null)
+                {
+                    transaccionExistente.cuenta =cuenta;
+                }
+                transaccionExistente.cantidad = transaccion.Cantidad;
+                transaccionExistente.descripcion = transaccion.Descripcion;
+                transaccionExistente.fecha = transaccion.Fecha;
+                await contexto.SaveChangesAsync();
+
+                return true;
             }
         }
     }

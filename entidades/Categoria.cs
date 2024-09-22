@@ -21,8 +21,8 @@ namespace Entidades
         [JsonIgnore]
         public Persona? Persona { get; set; }
         public int? EstadoId { get; set; }
-        // Propiedad de navegación
         public Estado? Estado { get; set; }
 
+         public string? color { get; set; }
     }
 }

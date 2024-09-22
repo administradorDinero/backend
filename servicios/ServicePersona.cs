@@ -1,5 +1,6 @@
 ﻿using apiCuentas.Validations;
 using Entidades;
+using Entidades.Dtos;
 using Microsoft.EntityFrameworkCore;
 using Repositorio;
 using Servicios.seguridad;
@@ -15,12 +16,12 @@ namespace Servicios
     {
 
 
-        public async Task<Persona> CreatePersona(Persona persona)
+        public async Task<Persona> CreatePersona(CreacionUsuarioDto persona)
         {
 
             PersonaValidation validationRules = new PersonaValidation();
 
-            var result =await validationRules.ValidateAsync(persona);
+            var result =await validationRules.ValidateAsync(new Persona { clave=persona.clave,correo=persona.correo,Nombre=persona.Nombre});
             if (!result.IsValid)
             {
                 result.Errors.ForEach(x =>
@@ -28,18 +29,17 @@ namespace Servicios
                     Console.WriteLine(x.ToString());
                 }
                  );
-                return persona;
+                return null;
             }
-            Console.WriteLine(persona.correo);
             using (var db = new PostgresContext())
             {
                     persona.clave = Encryptacion.HashPassword(persona.clave);
-                    var nueva= db.PersonaContext.Add(persona);
+                    var nueva= db.PersonaContext.Add(new Persona { correo=persona.correo,clave=persona.clave,Nombre=persona.Nombre});
                     await db.SaveChangesAsync();
                     return nueva.Entity;
             }
         }
-        public async Task<Persona> login(Persona persona)
+        public async Task<Persona> login(CredencialesUsuarioDto persona)
         {
 
             using (var db = new PostgresContext())
@@ -47,33 +47,34 @@ namespace Servicios
                 var personaValidation = await db.PersonaContext.FirstOrDefaultAsync( x => x.correo ==persona.correo);
                 if (personaValidation == null)
                 {
-                    return persona;
+                    return null;
                 }
                 
                 if(Encryptacion.VerifyPassword(persona.clave,personaValidation.clave))
                 {
                     return personaValidation;
                 }
-                return persona;
+                return null;
             }
 
         }
-        public async Task<PersonaDto> informacion(int id)
+        public async Task<InformacionPersonaDto> informacion(int id)
         {
             
             using(var db = new PostgresContext())
             {
+                return await db.PersonaContext
+    .Where(x => x.Id == id)
+    .Select(x => new InformacionPersonaDto
+    {
+        Id = x.Id,
+        Nombre = x.Nombre,
+        correo = x.correo,
+        Cuentas = x.Cuentas.ToList(), // Si quieres incluir las cuentas asociadas
+        Categorias = x.Categorias.ToList() // Si quieres incluir las categorías asociadas
+    })
+    .FirstOrDefaultAsync();
 
-                 return await db.PersonaContext
-            .Where(x => x.Id == id)
-            .Select(x => new PersonaDto
-            {
-                Id = x.Id,
-                Nombre = x.Nombre,
-                correo = x.correo,
-                Cuentas =x.Cuentas
-            })
-            .FirstOrDefaultAsync();  
             }
         }
         public async Task<String> DeletePersona( int id)
