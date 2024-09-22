@@ -9,8 +9,10 @@
   <ItemGroup>
     <Compile Remove="categoriaDto.cs" />
     <Compile Remove="CuentaDto.cs" />
+    <Compile Remove="Dtos\CategoriaTransaccionesDto.cs" />
     <Compile Remove="Dtos\informacionCategorias.cs" />
     <Compile Remove="Dtos\InformacionUsuarioDto.cs" />
+    <Compile Remove="Dtos\RetornarCuentaDto.cs" />
     <Compile Remove="PersonaDto.cs" />
   </ItemGroup>
 
