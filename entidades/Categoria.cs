@@ -19,9 +19,9 @@ namespace Entidades
         [JsonIgnore]
         public int? PersonaId { get; set; }
         [JsonIgnore]
-        public Persona? Persona { get; set; }
-        public int? EstadoId { get; set; }
-        public Estado? Estado { get; set; }
+        public Persona Persona { get; set; }
+        public int EstadoId { get; set; }
+        public Estado Estado { get; set; }
 
          public string? color { get; set; }
     }

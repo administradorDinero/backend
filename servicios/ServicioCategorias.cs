@@ -1,7 +1,7 @@
 ﻿using Entidades;
+using Entidades.Dtos;
 using Microsoft.EntityFrameworkCore;
 using Repositorio;
-using static Entidades.categoriaDto;
 
 namespace Servicios
 {
@@ -10,16 +10,26 @@ namespace Servicios
     /// </summary>
     public class ServicioCategorias
     {
-        public async Task<List<Categoria>> getCategorias(int idPersona)
+        /// <summary>
+        /// Informacion de las categorias asociadas a cada usuari
+        /// </summary>
+        /// <param name="idPersona"> id del usuario</param>
+        /// <returns>Arreglo de la informacion de los usuarios</returns>
+        public async Task<List<informacionCategoria>> getCategorias(int idPersona)
         {
             using (var db = new PostgresContext())
             {
-                return await db.CategoriaContext.Where(x => x.PersonaId == idPersona && x.Estado.Id ==2).ToListAsync()?? new List<Categoria>();
+                return await db.CategoriaContext.Where(x => x.PersonaId == idPersona && x.Estado.Id ==2).Select(x=> new informacionCategoria {color=x.color,CategoriaNo=x.CategoriaNo,Id=x.Id }).ToListAsync()?? new List<informacionCategoria>();
             }
 
         }
-
-        public async Task<Categoria> createCategorias(Categoria categoria,int idPersona)
+        /// <summary>
+        /// Agregar categoaria al usuario
+        /// </summary>
+        /// <param name="categoria">Categoria a añadir</param>
+        /// <param name="idPersona">id del usuario</param>
+        /// <returns></returns>
+        public async Task<Categoria> createCategorias(informacionCategoria categoria,int idPersona)
         {
             using (var db = new PostgresContext())
             {
@@ -29,16 +39,25 @@ namespace Servicios
                 {
                     return null;
                 }
-                categoria.PersonaId = idPersona;
-                categoria.Persona = persona;
-                categoria.Estado = await db.EstadoContext.FindAsync(2);
-                categoria.EstadoId = categoria.Estado.Id;
-                Categoria categoriaReturn =  db.CategoriaContext.Add(categoria).Entity;
+               var nuevaCategoria= new Categoria
+                {
+                    Persona = persona,
+                    PersonaId = persona.Id,
+                    EstadoId=2,
+                    Estado = await db.EstadoContext.FindAsync(2),
+                    CategoriaNo=categoria.CategoriaNo,
+                    color=categoria.color
+                };
+                Categoria categoriaReturn =  db.CategoriaContext.Add(nuevaCategoria).Entity;
                 await db.SaveChangesAsync();
                 return categoriaReturn;
-
             }
-        }
+        }/// <summary>
+        /// Eliminar categoria apartir del id
+        /// </summary>
+        /// <param name="id"> id categoria</param>
+        /// <param name="idPersona">id persona</param>
+        /// <returns>null en caso de fallos</returns>
         public async Task<Categoria> EliminarCategoria(int id, int idPersona)
         {
             using (var db = new PostgresContext())
@@ -58,7 +77,7 @@ namespace Servicios
 
             }
         }
-        public async Task<List<categoriaDto>> CategoriaByTransaccion(int idPersona, int pageNumber, int pageSize)
+        public async Task<List<informacionCategoriaTransacciones>> CategoriaByTransaccion(int idPersona, int pageNumber, int pageSize)
         {
             using (var db = new PostgresContext())
             {
@@ -67,13 +86,13 @@ namespace Servicios
                 {
                     return null;
                 }
-                List<categoriaDto> categoriasDto = await db.CategoriaContext.Where(c=>c.EstadoId==2)
-                     .Select(c => new categoriaDto
+                List<informacionCategoriaTransacciones> categoriasDto = await db.CategoriaContext.Where(c=>c.EstadoId==2)
+                     .Select(c => new informacionCategoriaTransacciones
                      {
                          Id = c.Id,
                          CategoriaNo = c.CategoriaNo,
                          Transacciones = db.TransaccionContext.Where(t => t.categoria.Id==c.Id)
-                             .Select(t => new TransaccionDto
+                             .Select(t => new InformacionTransaccionDto
                              {
                                  Id = t.Id,
                                  Cantidad = t.cantidad,
@@ -85,7 +104,7 @@ namespace Servicios
                      .ToListAsync();
                 if (categoriasDto == null)
                 {
-                    return new List<categoriaDto>();
+                    return new List<informacionCategoriaTransacciones>();
                 }
 
                 return categoriasDto;
@@ -93,7 +112,7 @@ namespace Servicios
             }
         }
 
-        public async Task<bool> Categoriaput(int idPersona,Categoria categoria)
+        public async Task<bool> Categoriaput(int idPersona,informacionCategoria categoria)
         {
             using (var contexto = new PostgresContext())
             {

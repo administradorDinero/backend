@@ -1,5 +1,6 @@
 ﻿
 using Entidades;
+using Entidades.Dtos;
 using Microsoft.EntityFrameworkCore;
 using Repositorio;
 using System;
@@ -15,18 +16,24 @@ namespace Servicios
     {
 
 
-    public async Task<Transaccion>  InsertTransaccion(Transaccion transaccion,int id)
+        /// <summary>
+        /// Ingresar una nueva transaccion, en dado caso no exista la categoria se crea una nuev
+        /// </summary>
+        /// <param name="transaccion">Informacion basica de una transaccion</param>
+        /// <param name="id">id del usuario</param>
+        /// <returns>Transaccion creada</returns>
+    public async Task<Transaccion>  InsertTransaccion(CrearNuevaTransaccionDto transaccion,int id)
         {
 
             using(var db = new PostgresContext())
             {
                 var personaExistente = await db.PersonaContext.FindAsync(id);
 
-                if ((transaccion.categoria?.Id??0)!=0)
+                var nuevaTransaccion = new Transaccion();
+                if (transaccion.idCategoria!=0)
                 {
-                    var categoriaFind = await db.CategoriaContext.FindAsync(transaccion.categoria.Id);
-                    transaccion.categoria = categoriaFind;
-                    Console.WriteLine(categoriaFind.Id);
+                    var categoriaFind = await db.CategoriaContext.FindAsync(transaccion.idCategoria);
+                    nuevaTransaccion.categoria = categoriaFind;
                 }
                 else
                 {
@@ -34,31 +41,40 @@ namespace Servicios
                     var estado = await db.EstadoContext.FindAsync(2);
                     if (categoriaId == null)
                     {
-                        transaccion.categoria = db.CategoriaContext.Add(new Categoria { CategoriaNo = "Default", PersonaId = id, Estado = estado }).Entity;
+                        nuevaTransaccion.categoria = db.CategoriaContext.Add(new Categoria { CategoriaNo = "Default", PersonaId = id, Estado = estado }).Entity;
                         db.SaveChanges();
                     }
                     else
                     {
-                        transaccion.categoria = categoriaId;
+                        nuevaTransaccion.categoria = categoriaId;
                     }
                 }
                 
                 
                 var tipo = await db.TipoContext.FindAsync(0);
-                var cuenta= await db.CuentaContext.FindAsync(transaccion.CuentaId);
+                var cuenta= await db.CuentaContext.FindAsync(transaccion.idCuenta);
 
-                if (personaExistente == null|| transaccion.categoria==null|| tipo==null|| cuenta==null)
+                if (personaExistente == null|| nuevaTransaccion.categoria==null|| tipo==null|| cuenta==null)
                 {
                     return null;
                 }
-                transaccion.tipo = tipo;
-                transaccion.cuenta = cuenta;
-                Transaccion nuevaTransaccion = db.TransaccionContext.Add(transaccion).Entity;
+                nuevaTransaccion.tipo = tipo;
+                nuevaTransaccion.cuenta = cuenta;
+                nuevaTransaccion.cantidad = transaccion.cantidad;
+                nuevaTransaccion.fecha = transaccion.fecha;
+                nuevaTransaccion.descripcion = transaccion.descripcion;
+                Transaccion transaccionGuardada = db.TransaccionContext.Add(nuevaTransaccion).Entity;
                  db.SaveChanges();
-                return nuevaTransaccion;
+                return transaccionGuardada;
             }
 
         }
+        /// <summary>
+        /// Eliminar transaccion dependiendo del id de la misma
+        /// </summary>
+        /// <param name="idTransaccion">id de la transaccion</param>
+        /// <param name="id">id de la persona</param>
+        /// <returns>Depende de la cantidad de filas eliminadas en la base de datos deberia ser siempre 1</returns>
         public async Task<int> deleteTransaccion(int idTransaccion, int id)
         {
             using (var db = new PostgresContext())
@@ -76,8 +92,14 @@ namespace Servicios
                 return nuevaTransaccion;
             }
         }
-
-        public async Task<List<TransaccionDto>> TransaccionesUsuario(int id, int pageNumber, int pageSize)
+        /// <summary>
+        /// Obtener las transacciones de un usuario
+        /// </summary>
+        /// <param name="id">id de un usarios</param>
+        /// <param name="pageNumber">pagina de transacciones</param>
+        /// <param name="pageSize">tamaño</param>
+        /// <returns>Lista con la informacion de las transacciones</returns>
+        public async Task<List<InformacionTransaccionDto>> TransaccionesUsuario(int id, int pageNumber, int pageSize)
         {
             using (var db = new PostgresContext())
             {
@@ -91,7 +113,7 @@ namespace Servicios
                  .Where(c => c.persona.Id == id)
                  .SelectMany(c => c.Transaccions.Skip((pageNumber - 1) * pageSize)
                      .Take(pageSize)
-                     .OrderByDescending(t => t.fecha).Select(t => new TransaccionDto
+                     .OrderByDescending(t => t.fecha).Select(t => new InformacionTransaccionDto
                      {
                          Id = t.Id,
                          Cantidad = t.cantidad,
@@ -106,7 +128,13 @@ namespace Servicios
                 return transacciones;
             }
         }
-        public async Task<bool> ActualizarTransaccionAsync(TransaccionDto transaccion, int id)
+        /// <summary>
+        /// Modificacion de una transaccion
+        /// </summary>
+        /// <param name="transaccion">Informacion especifica para actualizar para una transaccion</param>
+        /// <param name="id">id del usuario</param>
+        /// <returns>True/False</returns>
+        public async Task<bool> ActualizarTransaccionAsync(informacionEspecificaTransaccionDto transaccion, int id)
         {
             using (var contexto = new PostgresContext()) 
             {
@@ -116,12 +144,12 @@ namespace Servicios
                 {
                     return false;
                 }
-                if ((transaccion.categoria?.Id ?? 0) != 0)
+                if (transaccion.idCategoria  != 0)
                 {
-                    var categoriaFind = await contexto.CategoriaContext.FindAsync(transaccion.categoria.Id);
+                    var categoriaFind = await contexto.CategoriaContext.FindAsync(transaccion.idCategoria);
                     transaccionExistente.categoria =categoriaFind;
                 }
-                var cuenta = await contexto.CuentaContext.FindAsync(transaccion.CuentaId);
+                var cuenta = await contexto.CuentaContext.FindAsync(transaccion.idCuenta);
 
                 if (cuenta!=null)
                 {

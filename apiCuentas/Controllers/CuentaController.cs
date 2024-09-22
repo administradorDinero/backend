@@ -76,7 +76,11 @@ namespace apiCuentas.Controllers
             var result = await servicioCuenta.obtenerCuentas(int.Parse(claim.Value.ToString()));
             return Ok(result);
         }
-
+        /// <summary>
+        /// Obtener informacion en especifico de una cuenta
+        /// </summary>
+        /// <param name="idcuenta">Identificacion de una cuenta</param>
+        /// <returns>Devuelve las transacciones asociadas a la cuenta</returns>
         [HttpGet("{idcuenta}")]
         [Authorize]
         public async Task<ActionResult> getCuenta(int idcuenta)
@@ -94,7 +98,11 @@ namespace apiCuentas.Controllers
             var result = await servicioCuenta.obtenerCuenta(int.Parse(claim.Value.ToString()),idcuenta);
             return Ok(result);
         }
-
+        /// <summary>
+        /// Eliminar una cuenta
+        /// </summary>
+        /// <param name="idcuenta"> id de la cuenta</param>
+        /// <returns>Cuenta eliminada</returns>
         [HttpDelete("{idcuenta}")]
         [Authorize]
         public async Task<ActionResult> RemoveCuenta(int idcuenta)      
@@ -112,11 +120,20 @@ namespace apiCuentas.Controllers
             var id = int.Parse(claim.Value.ToString());
 
             var result =await servicioCuenta.deleteCuenta(idcuenta, id);
+            if (result == 0)
+            {
+                return NoContent();
+            }
             return Ok(result);
         }
+        /// <summary>
+        /// Modificar propiedades especificas de la cuenta.
+        /// </summary>
+        /// <param name="cuenta"></param>
+        /// <returns> True/False si se realizo de forma correcta</returns>
         [HttpPut]
         [Authorize]
-        public async Task<ActionResult> PutCuenta(CuentaDto cuenta)
+        public async Task<ActionResult> PutCuenta(ModificarCuentaDto cuenta)
         {
             var claims = User.Claims.Select(claim => new
             {
@@ -130,7 +147,7 @@ namespace apiCuentas.Controllers
             }
             var id = int.Parse(claim.Value.ToString());
            
-            var result = await servicioCuenta.ActualizarCuentaAsync(cuenta);
+            var result = await servicioCuenta.ActualizarCuentaAsync(cuenta,id);
             return Ok(result);
         }
     }

@@ -7,7 +7,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="categoriaDto.cs" />
+    <Compile Remove="CuentaDto.cs" />
+    <Compile Remove="Dtos\informacionCategorias.cs" />
     <Compile Remove="Dtos\InformacionUsuarioDto.cs" />
+    <Compile Remove="PersonaDto.cs" />
   </ItemGroup>
 
 </Project>

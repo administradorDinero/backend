@@ -42,7 +42,7 @@ namespace Servicios
                     Valor = c.valor??0,
                     Descripcion = c.descripcion,
                     color=c.color,
-                    Transacciones = c.Transaccions?.Select(t => new TransaccionDto
+                    Transacciones = c.Transaccions?.Select(t => new InformacionTransaccionDto
                     {
                         Id = t.Id,
                         Cantidad = t.cantidad,
@@ -59,31 +59,38 @@ namespace Servicios
      
             }
         }
-        public async Task<List<CuentaDto>> obtenerCuenta(int id,int id_cuenta)
+        /// <summary>
+        /// Obtener informacion en especifico de una cuenta
+        /// </summary>
+        /// <param name="id">identificacion de la persona</param>
+        /// <param name="id_cuenta">Identificacion de la cuenta asociada</param>
+        /// <returns>Retornara la informacion asociada a la cuenta</returns>
+        public async Task<InformacionCuentaDto> obtenerCuenta(int id,int id_cuenta)
         {
             using (var db = new PostgresContext())
             {
+                Cuenta? cuenta = await db.CuentaContext.Include(c => c.Transaccions.OrderByDescending(t => t.fecha)).Where(x => x.persona.Id == id && x.Id== id_cuenta).FirstOrDefaultAsync() ;
 
-                List<Cuenta> cuentas = await db.CuentaContext.Include(c => c.Transaccions.OrderByDescending(t => t.fecha)).Where(x => x.persona.Id == id && x.Id== id_cuenta).ToListAsync() ;
-                var cuentasDto = cuentas.Select(c => new CuentaDto
+                if (cuenta == null)
                 {
-                    Id = c.Id,
-                    Valor = c.valor,
-                    Descripcion = c.descripcion,
-                    color =c.color,
-                    Transacciones = c.Transaccions?.Select(t => new TransaccionDto
+                    return null;
+                }
+                var cuentasDto = new InformacionCuentaDto
+                {
+                    Id = cuenta.Id,
+                    Valor = cuenta.valor ?? 0,
+                    Descripcion = cuenta.descripcion,
+                    color = cuenta.color,
+                    Transacciones = cuenta.Transaccions?.Select(t => new InformacionTransaccionDto
                     {
                         Id = t.Id,
                         Cantidad = t.cantidad,
                         Fecha = t.fecha,
                         Descripcion = t.descripcion,
-                        CuentaId = c.Id
+                        CuentaId = cuenta.Id
                     }).ToList()
-                }).ToList();
-                if (cuentas == null)
-                {
-                    return null;
-                }
+                };
+
                 return cuentasDto;
 
             }
@@ -112,6 +119,12 @@ namespace Servicios
                 return created;
             }
         }
+        /// <summary>
+        /// Eliminar cuenta apartir del id
+        /// </summary>
+        /// <param name="idcuenta">Id de la cuenta a eliminar</param>
+        /// <param name="id"></param>
+        /// <returns>Retorna la cuenta eliminada</returns>
         public async Task<int> deleteCuenta(int idcuenta, int id)
         {
 
@@ -127,19 +140,30 @@ namespace Servicios
                 return deleted;
             }
         }
-        public async Task<bool> ActualizarCuentaAsync(CuentaDto cuentaActualizada)
+        /// <summary>
+        /// Modificar la cuenta con las propiedades nuevas
+        /// </summary>
+        /// <param name="cuentaActualizada">Propiedades a actualizar</param>
+        /// <param name="idUser"> id del usuario</param>
+        /// <returns>Retorna True/False</returns>
+        public async Task<bool> ActualizarCuentaAsync( ModificarCuentaDto cuentaActualizada, int idUser)
         {
-            using (var contexto = new PostgresContext()) // Asegúrate de usar tu propio DbContext
+            using (var contexto = new PostgresContext()) 
             {
-                // Buscar la cuenta en la base de datos
+                 var personaExistente = await contexto.PersonaContext.FindAsync(idUser);
+                if (personaExistente == null)
+                {
+                    return false;
+                }
+
                 var cuentaExistente = await contexto.CuentaContext.FirstOrDefaultAsync(c => c.Id == cuentaActualizada.Id);
 
                 if (cuentaExistente == null)
                 {
                     return false; 
                 }
-                cuentaExistente.valor = cuentaActualizada.Valor;
-                cuentaExistente.descripcion = cuentaActualizada.Descripcion;
+                cuentaExistente.valor = cuentaActualizada.valor;
+                cuentaExistente.descripcion = cuentaActualizada.descripcion;
                 cuentaExistente.color = cuentaActualizada.color;
                 await contexto.SaveChangesAsync();
 
